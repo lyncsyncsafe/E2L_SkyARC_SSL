@@ -4,6 +4,30 @@ Results of boot and install testing for kiro-iso builds. Newest first.
 
 ---
 
+## 2026-06-30 — Production v26.07.01 release ISO: first REAL-METAL install (picard) — default install, 0 FAIL
+
+The same **`v26.07.01` release ISO** validated earlier in VirtualBox, now installed on **real
+hardware** (picard — physical box, Samsung SSD 860 EVO 500GB, real UEFI firmware). This is the
+bare-metal counterpart to the VBox test below: it confirms the production release installs and
+boots cleanly off real firmware/storage, not just the emulated path. Default-edition install
+validated over SSH (`erik@192.168.1.9`):
+
+| Target (real metal) | FS / encryption | Bootloader | Result |
+|---------------------|-----------------|------------|--------|
+| **picard** Kiro default (XFCE/ohmychadwm) | **ext4**, unencrypted | UEFI / systemd-boot 261.1 | Clean install; **kiro-audit 133 / 0 / 0** |
+
+Verification on the installed system:
+- **Release identity:** `/etc/dev-rel` `ISO_RELEASE=v26.07.01`, `ISO_BUILD=Tue Jun 30 01:18:30 PM CEST 2026` — identical ISO to the VBox run.
+- **kiro-audit 133 / 0 / 0** (one PASS more than the VBox run's 132 — the extra check is hardware-dependent, present on real metal / N-A in the VM).
+- **fish default end-to-end:** installed `erik` login shell = `/bin/fish`.
+- Kernels `linux-cachyos` 7.1.2-3 (+ `linux-zen` 7.0.14 fallback); sessions `ohmychadwm` / `xfce` / `xfce-wayland`; UEFI / systemd-boot 261.1; boot 18.6s; 0 failed units.
+- Service baseline: firewalld active+enabled (zone `public`), `cups.socket` enabled+active, `logrotate.timer` enabled+active, tuned `throughput-performance` (ppd inactive), all 10 udev rules present.
+- Signing: Kiro key **TRUSTED**, global `SigLevel = Required DatabaseOptional`.
+- Name-leakage clean (only `/home/erik` archive-doc prose under `kiro-assistant/knowledge`, not config).
+- Host `erik-systemproductname` (installer left default hostname). NIC quiet (no e1000e/ethtool noise). Only benign journal lines (`alsactl restore` exit 19, `gkr-pam` first-login keyring note).
+
+This validates the **v26.07.01 production release ISO on real metal** in addition to the VBox run.
+
 ## 2026-06-30 — Production v26.07.01 release ISO: fish default + Kiro-menu reorg — default install, 0 FAIL
 
 The **actual `v26.07.01` release ISO** (`ISO_BUILD` Tue Jun 30 13:18, ISO file 13:25) — built today
