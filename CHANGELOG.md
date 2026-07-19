@@ -2,6 +2,33 @@
 
 > Complete history of the KIRO ISO project — newest first. Each entry explains not just what changed, but why it was done and what benefit it brings. Daily rebuilds (version bump + mirrorlist refresh only) are grouped into a single line.
 
+## 2026.07.19
+
+### Add two new X11 window-manager editions: **dusk** and **hlwm**
+
+Promoted from the beta ISO (`kiro-iso-next`) after validation. The ISO Builder (KIB)
+auto-discovers the editions it can bake from the `EDITION-BLOCK` markers in
+**`archiso/packages.x86_64`**; comparing that list against **ATT's** desktop picker
+(`desktopr.py`, the canonical reference the build scripts already cite) surfaced exactly
+two X11 window managers ATT can install but the ISO could not bake in — **dusk** (a
+dwm-fork, `kiro-dusk`, ships its own `xsessions/dusk.desktop`) and **herbstluftwm**
+(`kiro-hlwm`, session file supplied by Arch's `herbstluftwm` package).
+
+- **`archiso/packages.x86_64`** — two new commented `EDITION-BLOCK`s. Both follow the
+  existing lean convention (the same core the chadwm/bspwm/leftwm blocks use, not ATT's
+  fuller utility set): `dusk` mirrors the chadwm block with `kiro-dusk` swapped in and no
+  `sxhkd`; `hlwm` uses that same core plus the herbstluftwm/polybar stack
+  (`kiro-hlwm herbstluftwm kiro-polybar polybar`), matching how bspwm/leftwm carry polybar.
+- **`build-scripts/build-the-iso.sh`** — `apply_editions()` maps `hlwm → herbstluftwm` in
+  the `sddm_session` `case` (alongside the existing `budgie → budgie-desktop`), because the
+  live-ISO autologin session basename is `herbstluftwm.desktop`, not `hlwm`. `dusk` needs no
+  mapping — its session file already matches the edition name.
+- **`build-scripts/build.conf.defaults`** — the `# Available:` edition list now includes
+  `dusk` and `hlwm`.
+- **Why:** users building a Kiro ISO can now bake a Dusk or Herbstluftwm session directly,
+  closing the gap with what ATT already offers post-install. KIB needs no code change —
+  `functions.py :: list_editions()` discovers the new blocks automatically.
+
 ## 2026.06.30
 
 ### Add `version_override` knob — forward/back-date a release without faking the clock
